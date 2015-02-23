@@ -13,7 +13,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-g", "--groupBy", action="store", help="Group by columns", dest="groupBy")
 parser.add_argument("-s", "--sum", action="store", help="Sum columns", dest="sum")
-parser.add_argument("-f", "--file", action="store", help="Fields to be printed", dest="field")
+parser.add_argument("-f", "--field", action="store", help="Fields to be printed", dest="field")
 parser.add_argument("-c", "--char", action="store", default="\t", help="Input field delimiter", dest="char")
 args = vars(parser.parse_args())
 

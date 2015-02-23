@@ -7,7 +7,7 @@
 Files:
 	sum.py
 
-Discription:
+Description:
 	- Command line utility used to sum and format data from stdin
 	- Input data must be sorted on the groupBy column for proper summing
 	- Ex:
