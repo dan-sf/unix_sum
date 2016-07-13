@@ -1,10 +1,8 @@
 #!/usr/bin/python
 
-#------------------------------------------
-# Unix sum script: Maintained by Dan Fowler
-# Website: dsfcode.com
-# Version 1.0.0
-#------------------------------------------
+#----------------
+# Unix sum script
+#----------------
 
 import sys
 import argparse
