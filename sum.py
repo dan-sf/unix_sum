@@ -1,93 +1,80 @@
-#!/usr/bin/python
-
-#----------------
-# Unix sum script
-#----------------
-
 import sys
 import argparse
+import itertools
+import operator
 
-# Parse the args
-parser = argparse.ArgumentParser()
-parser.add_argument("-g", "--groupBy", action="store", help="Group by columns", dest="groupBy")
-parser.add_argument("-s", "--sum", action="store", help="Sum columns", dest="sum")
-parser.add_argument("-f", "--field", action="store", help="Fields to be printed", dest="field")
-parser.add_argument("-c", "--char", action="store", default="\t", help="Input field delimiter", dest="char")
-args = vars(parser.parse_args())
+def line_format(stream, char):
+    """
+    Yield formatted lines from stream input
+    """
+    for line in stream:
+        line = line.rstrip('\n').split(char)
+        yield line
 
-# Create int args lists
-if args['sum'] == None:
-	sum = None
-else:
-	sum = [ int(s) for s in args['sum'].split(',') ]
-if args['groupBy'] == None:
-	groupBy = None
-else:
-	groupBy = [ int(g) for g in args['groupBy'].split(',') ]
-if args['field'] == None:
-	field = None
-else:
-	field = [ int(f) for f in args['field'].split(',') ]
+def print_record(record, field):
+    """
+    Write data to stdout
+    """
+    if field != None:
+        record = [ record[f] for f in field ]
+    record = '\t'.join(str(i) for i in record)
+    sys.stdout.write(record + '\n')
 
-# Create print function
-def printData(l):
-	if field == None:
-		print args['char'].join(str(x) for x in l)
-	else:
-		print args['char'].join(str(l[x-1]) for x in field)
+def sum_records(group, sum_col):
+    """
+    Sum records in group
+    """
+    first = True
+    for record in group:
+        if first:
+            last_record = record
+            first = False
+        else:
+            for i in sum_col:
+                record[i] = int(record[i]) + int(last_record[i])
+            last_record = record
+    return record
 
-# Create int casting function for summed output
-def sumInts(l):
-	if sum != None:
-		for s in sum:
-			if int(l[s-1]) == l[s-1]:
-				l[s-1] = int(l[s-1])
+def split_args(arg):
+    """
+    Split out comma delim input arg
+    """
+    if arg is None:
+        return arg
+    else:
+        return [ int(i) for i in arg.split(',') ]
 
-# Initialize first row var
-first_row = True
+def group_input(stream, args):
+    """
+    Group input by the groupby key, sum, and output results
+    """
+    groupby = split_args(args.groupby)
+    sum_col = split_args(args.sum_col)
+    group_key = operator.itemgetter(*groupby)
 
-# Loop through stdin
-for row in sys.stdin:
-	# Read the entire row into a list
-	row_list = list(row.strip().split(args['char']))
-	# Cast summing columns as floats
-	if sum != None:
-		for s in sum:
-			row_list[s-1] = float(row_list[s-1])
-	# Create the sum groupBy key
-	if groupBy != None:
-		key = [ row_list[g-1] for g in groupBy ]
-	else:
-		key = None
+    for key, group in itertools.groupby(line_format(stream, args.char),
+                                        key=lambda x: group_key(x)):
+        record = sum_records(group, sum_col)
+        print_record(record, split_args(args.field))
 
-	# Initialize first row vars
-	if first_row:
-		last_row = row_list
-		last_key = key
-		first_row = False
-	else:
-		# Keep summing if keys are equal
-		if key == last_key:
-			if sum != None:
-				for s in sum:
-					row_list[s-1] = row_list[s-1] + last_row[s-1]
-			# Reset keys
-			last_row = row_list
-			last_key = key
-			# Print out cols if only -f is used
-			if key == None and sum == None:
-				printData(last_row)
-		else:
-			# Remove .0 from ints
-			sumInts(last_row)
-			# Output Data
-			printData(last_row)
-			# Reset keys
-			last_row = row_list
-			last_key = key
+def cmd_line_parser(args):
+    """
+    Parse cmd line args
+    """
+    parser = argparse.ArgumentParser()
 
-# Remove .0 from ints
-sumInts(row_list)
-# Print final row
-printData(row_list)
+    parser.add_argument("-g", "--groupby", action="store",
+                        help="Comma delim list of columns to group by", dest="groupby")
+    parser.add_argument("-s", "--sum_col", action="store",
+                        help="Comma delim list of columns to sum on", dest="sum_col")
+    parser.add_argument("-f", "--field", action="store",
+                        help="Comma delim list of fields to be printed", dest="field")
+    parser.add_argument("-c", "--char", action="store", default="\t",
+                        help="Input field delimiter, defaults to tab", dest="char")
+
+    return parser.parse_args(args)
+
+if __name__ == '__main__':
+    args = cmd_line_parser(sys.argv[1:])
+    group_input(sys.stdin, args)
 
