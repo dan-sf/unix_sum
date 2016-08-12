@@ -11,13 +11,13 @@ def line_format(stream, char):
         line = line.rstrip('\n').split(char)
         yield line
 
-def print_record(record, field):
+def print_record(record, field, char):
     """
     Write data to stdout
     """
     if field != None:
         record = [ record[f] for f in field ]
-    record = '\t'.join(str(i) for i in record)
+    record = char.join(str(i) for i in record)
     sys.stdout.write(record + '\n')
 
 def sum_records(group, sum_col):
@@ -55,7 +55,7 @@ def group_input(stream, args):
     for key, group in itertools.groupby(line_format(stream, args.char),
                                         key=lambda x: group_key(x)):
         record = sum_records(group, sum_col)
-        print_record(record, split_args(args.field))
+        print_record(record, split_args(args.field), args.char)
 
 def cmd_line_parser(args):
     """
