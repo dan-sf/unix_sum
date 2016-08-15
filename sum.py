@@ -67,11 +67,11 @@ def cmd_line_parser(args):
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-s", "--sum_col", action="store", required=True,
-                        help="Comma delim list of columns to sum on, this argument is required.", dest="sum_col")
+                        help="Comma delim list of columns to sum on, this argument is required, zero based.", dest="sum_col")
     parser.add_argument("-g", "--groupby", action="store",
-                        help="Comma delim list of columns to group by. If not used, all input will be grouped.", dest="groupby")
+                        help="Comma delim list of columns to group by. If not used, all input will be grouped, zero based.", dest="groupby")
     parser.add_argument("-f", "--field", action="store",
-                        help="Comma delim list of fields to be printed.", dest="field")
+                        help="Comma delim list of fields to be printed, zero based.", dest="field")
     parser.add_argument("-c", "--char", action="store", default="\t",
                         help="Input field delimiter, defaults to tab.", dest="char")
 

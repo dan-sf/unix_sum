@@ -8,14 +8,19 @@ Usage
 
 .. code-block:: bash
 
-    usage: sum.py [-h] [-g GROUPBY] [-s SUM] [-f FIELD] [-c CHAR]
+    usage: sum.py [-h] -s SUM_COL [-g GROUPBY] [-f FIELD] [-c CHAR]
 
     optional arguments:
       -h, --help            show this help message and exit
-      -g GROUPBY, --groupBy GROUPBY Group by columns
-      -s SUM, --sum SUM     Sum columns
-      -f FIELD, --file FIELD Fields to be printed
-      -c CHAR, --char CHAR  Input field delimiter
+      -s SUM_COL, --sum_col SUM_COL
+                            Comma delim list of columns to sum on, this argument
+                            is required, zero based.
+      -g GROUPBY, --groupby GROUPBY
+                            Comma delim list of columns to group by. If not used,
+                            all input will be grouped, zero based.
+      -f FIELD, --field FIELD
+                            Comma delim list of fields to be printed, zero based.
+      -c CHAR, --char CHAR  Input field delimiter, defaults to tab.
 
 Example
 -------
@@ -36,7 +41,7 @@ Example
     201308	data_type_2	24474
     201309	data_type_2	9601
     201402	data_type_2	11123
-    $ cat file | sort -k2,2 | sum.py -g 2 -s 3 -f 2,3
+    $ cat file | sort -k2,2 | sum.py -g 1 -s 2 -f 1,2
     data_type_1	128984
     data_type_2	75749
 
