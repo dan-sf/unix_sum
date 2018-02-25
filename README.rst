@@ -1,6 +1,14 @@
 README for unix_sum
 ===================
 
+Deprecation Notice
+------------------
+
+This repo has been deprecated. The sum-tool package should be used over this repo which can be accessed here: https://github.com/dan-sf/sum-tool
+
+Description
+-----------
+
 Command line utility used to sum and format data from stdin. Input data must be sorted on the groupBy column for proper summing.
 
 Usage
